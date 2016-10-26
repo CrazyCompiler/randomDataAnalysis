@@ -1,0 +1,16 @@
+svg{
+	border:1px solid blue;
+}
+
+circle{
+	stroke: blue;
+}
+
+.grid{
+	stroke: lightgrey;
+}
+
+.random-path{
+	stroke: steelblue;
+	fill:none;
+}
