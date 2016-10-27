@@ -1,16 +1,24 @@
 svg{
-	border:1px solid blue;
-}
-
-circle{
-	stroke: blue;
+	border:1px solid black;
 }
 
 .grid{
 	stroke: lightgrey;
 }
 
-.random-path{
+.random_path{
 	stroke: steelblue;
 	fill:none;
+}
+
+.lineChart{
+	float: left;
+}
+
+.barChart{
+	float: right;
+}
+
+.bar{
+	fill: steelBlue;
 }

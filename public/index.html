@@ -5,10 +5,16 @@
 	<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
-	<br/>
-	<h2>Charts</h2>
-	<br/>
-	<iframe src="lineChart.html" width="700" height="700" ></iframe>
-	<iframe src="barChart.html" width="700" height="700" ></iframe>
+<script type="text/javascript" src="javascript/d3.v4.min.js"></script>
+<script type="text/javascript" src="javascript/visualise.js"></script>
+	<div class="buttons">
+		<br>
+			<button onclick="pause()"> PAUSE </button>
+			<button onclick="renderChart()"> RESUME </button>
+		<br>
+		<br>
+	</div>
+	<div class="lineChart"></div>
+	<div class="barChart" ></div>
 </body>
 </html>
