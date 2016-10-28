@@ -52,7 +52,15 @@ var createInitialChart = function (divClass) {
 
 }
 
-var generateLineChart = function(svg, data){
+var generateLineChart = function(svg){
+
+	svg.append("defs")
+		.append("clipPath")
+		.attr("id", "clip")
+		.append("rect")
+		.attr("width", INNER_WIDTH)
+		.attr("height", HEIGHT);
+
 	svg.selectAll('.xAxis .tick')
 		.append('line')
 		.attr('x1', 0)
@@ -74,17 +82,21 @@ var generateLineChart = function(svg, data){
 		.y(function(q){return _yScale(q)});
 
 	var g = svg.append('g')
+		.attr("clip-path", "url(#clip)")
 		.attr('transform',  translate(MARGIN, MARGIN))
-		.attr('class','lineG')
-		.append('path')
-		.classed('random_path', true)
-		.attr("d", _line(data));
+		.attr('class','random_path');
 };
 
-var updateLineChart = function(data){
-	d3.select('.lineG path')
-		.attr('class','random_path')
+var updateLineChart = function(data) {
+	d3.select('.random_path path').remove();
+	d3.select('.random_path ')
+		.append('path')
 		.attr("d", _line(data))
+		.attr("transform", null)
+		.transition()
+		.duration(785)
+		.ease(d3.easeLinear)
+		.attr("transform", "translate(" + _xScale(-1) + ",0)")
 };
 
 var generateBarChart = function (svg, data) {
@@ -99,7 +111,9 @@ var generateBarChart = function (svg, data) {
 		.domain([0,100])
 		.range([INNER_HEIGHT, 0]);
 
-	var bars = svg.selectAll('rect')
+	var bars = svg.append("g")
+		.attr("class","barChart")
+		.selectAll('rect')
 		.data(data);
 
 	bars.enter()
@@ -114,7 +128,7 @@ var generateBarChart = function (svg, data) {
 };
 
 var updateBarChart = function (data) {
-	d3.selectAll('rect')
+	d3.selectAll('.barChart rect')
 		.data(data)
 		.attr("x",function (d,i) { return _barChartXSCale(i)})
 		.attr("y",function (d) { return _barChartYScale(d)})
@@ -124,17 +138,13 @@ var updateBarChart = function (data) {
 		.attr("transform",translate(MARGIN,MARGIN));
 };
 
-var generateRandomData = function () {
-	defaultData.shift();
-	defaultData.push(next());
-};
-
 var renderChart = function() {
 	_interval = setInterval(function(){
-		generateRandomData();
+		defaultData.push(next());
 		updateLineChart(defaultData);
 		updateBarChart(defaultData);
-	}, 250);
+		defaultData.shift();
+	}, 800);
 };
 
 window.onload = function() {
