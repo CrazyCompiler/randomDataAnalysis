@@ -1,0 +1,8 @@
+.barChart div{
+    margin: 1px;
+    text-align: right;
+    font-family: Serif;
+    font-size: small;
+    color:white;
+    height: 15px;
+}

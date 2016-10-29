@@ -1,0 +1,37 @@
+body{
+    font-family: serif;
+    font-size: 10px;
+}
+
+.chart{
+    margin-top:20px;
+}
+
+.chart div{
+    margin: 1px;
+    text-align: center;
+    font-family: Serif;
+    font-size: small;
+    color:white;
+    height: 15px;
+    border-radius: 25px;
+}
+
+.legend{
+    display: inline-block;
+}
+
+.legend div{
+    width: 60px;
+    text-align: center;
+    font-family: Serif;
+    font-size: small;
+    color:white;
+    border-radius: 25px;
+    display: inline-block;
+}
+
+button{
+    border-radius: 25px;
+    cursor: pointer;
+}
