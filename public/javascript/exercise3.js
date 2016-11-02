@@ -43,7 +43,7 @@ var renderChart = function(data){
         .style("background",function (d) { return colors(d.subject); })
         .text(function (d) { return d['name'] + " " + d['score']; })
         .style("top", function(d, i) {
-            return 60 + ((i*20)) + "px";
+            return 30 + ((i*20)) + "px";
         });
 
     div.exit().remove();
@@ -68,7 +68,7 @@ var sortData = function (sortBy) {
         .sort(function (a,b) { return d3.ascending(a[sortBy],b[sortBy]);})
         .transition().duration(500)
         .style("top", function(d, i) {
-                return 60 + ((i*20)) + "px";
+                return 30 + ((i*20)) + "px";
             });
 
     d3.selectAll('.chart div').exit().remove();

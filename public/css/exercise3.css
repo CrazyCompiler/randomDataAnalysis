@@ -4,12 +4,10 @@ body{
 }
 
 .chart{
-    margin-top:20px;
-    height: 300px;
+    height: 250px;
 }
 
 .chart div{
-    margin: 1px;
     text-align: center;
     font-family: Serif;
     font-size: small;
