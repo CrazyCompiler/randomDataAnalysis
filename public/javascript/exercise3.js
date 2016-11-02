@@ -41,7 +41,10 @@ var renderChart = function(data){
     div.enter().append('div')
         .style("width",function (d) { return xScale(d['score'])+"px"; })
         .style("background",function (d) { return colors(d.subject); })
-        .text(function (d) { return d['name'] + " " + d['score']; });
+        .text(function (d) { return d['name'] + " " + d['score']; })
+        .style("top", function(d, i) {
+            return 60 + ((i*20)) + "px";
+        });
 
     div.exit().remove();
 };
@@ -58,9 +61,15 @@ window.onload = function() {
 };
 
 var sortData = function (sortBy) {
-    d3.selectAll('.chart div')
+
+    var body = d3.select("body");
+
+    body.selectAll('.chart div')
         .sort(function (a,b) { return d3.ascending(a[sortBy],b[sortBy]);})
-        .transition().duration(500);
+        .transition().duration(500)
+        .style("top", function(d, i) {
+                return 60 + ((i*20)) + "px";
+            });
 
     d3.selectAll('.chart div').exit().remove();
 }

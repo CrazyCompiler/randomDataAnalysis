@@ -5,6 +5,7 @@ body{
 
 .chart{
     margin-top:20px;
+    height: 300px;
 }
 
 .chart div{
@@ -15,6 +16,7 @@ body{
     color:white;
     height: 15px;
     border-radius: 25px;
+    position: fixed;
 }
 
 .legend{
