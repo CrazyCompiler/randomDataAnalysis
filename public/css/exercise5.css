@@ -1,0 +1,13 @@
+body{
+    font-family: serif;
+    font-size: 20px;
+}
+
+.chart div{
+    border : 1px solid gray;
+    text-align: center;
+    margin: 2px;
+    vertical-align: top;
+    display:inline;
+
+}
