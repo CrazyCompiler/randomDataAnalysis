@@ -12,4 +12,11 @@ body{
 .chart table td ,th{
     padding: 10px;
     border: 1px solid black;
+    height: 20px;
+    width: 100px;
+    text-align: center;
+}
+
+.hide{
+    visibility: hidden;
 }
