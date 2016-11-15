@@ -23,11 +23,6 @@ var generateChart = function () {
     generateRow(table,"n square",data,d3.scalePow().exponent(2),'td');
     generateRow(table,"log(n)",data,d3.scaleLog().base(Math.E),'td');
     generateRow(table,"log(n) rounded",data,d3.scaleLog().base(Math.E).rangeRound([0,2]),'td');
-
-
-
-
-
     var nodeList = table.selectAll(".hide")._groups[0];
 
     var elements = Array.apply(null, nodeList);
