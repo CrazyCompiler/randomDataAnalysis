@@ -40,6 +40,21 @@ var generateLine = function (xScale, yScale, container, data) {
         .attr("d", line(data));
 };
 
+var generateCircles = function (xScale, yScale, container, data ) {
+    var g = container.append('g')
+            .attr('class','circle')
+            .attr('transform', translate(MARGIN, MARGIN));
+
+        g.selectAll('circle').data(data)
+        .enter().append('circle')
+        .attr('r', 4);
+
+    var circles = g.selectAll('circle');
+
+    circles.attr('cx', function(q,i){return xScale(i)})
+        .attr('cy', function(q){return yScale(q)});
+}
+
 var getXValues = function () {
     var xNodes = d3.selectAll('.xAxis text')._groups[0];
     var values = [];
@@ -75,6 +90,9 @@ var generateChart = function () {
     })
 
     generateLine(xScale, yScale, svg, sinValues);
+    generateCircles(xScale, yScale, svg, data);
+    generateCircles(xScale, yScale, svg, sinValues);
+
 
 };
 

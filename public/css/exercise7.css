@@ -3,3 +3,9 @@
     stroke: steelblue;
     stroke-width:2;
 }
+
+.circle{
+    fill: white;
+    stroke: steelblue;
+    stroke-width:1px;
+}
