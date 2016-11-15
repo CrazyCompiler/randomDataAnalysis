@@ -4,25 +4,11 @@ const figureHeight = 100;
 const figureWidth = 100;
 const INITIAL = 0;
 
-var generateFigures = function (figuresConfigurations) {
-
-}
-
 var generateChart = function () {
     var svg = d3.select('.chart')
                 .append('svg')
                 .attr('width', WIDTH)
                 .attr('height', HEIGHT);
-
-
-    // var line = {
-    //     'type':'line',
-    //     'x1'  :figureWidth,
-    //     'y1'  :INITIAL,
-    //     'x2'  :INITIAL,
-    //     'y2'  :figureHeight
-    // };
-    //
 
     svg.append('line')
         .attr('x1', figureWidth)
