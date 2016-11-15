@@ -1,10 +1,15 @@
+.figures{
+    border: 1px solid gray;
+    border-radius: 10px 10px;
+}
+
 .element {
     stroke-width :2;
     fill: none;
 }
 
 .line{
-    stroke: brown;
+    stroke: gray;
 }
 
 .circle{
@@ -12,7 +17,7 @@
 }
 
 .rect {
-    stroke: blue;
+    stroke: #5D8896;
 }
 
 .triangle{

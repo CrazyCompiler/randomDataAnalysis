@@ -1,4 +1,4 @@
-const WIDTH = 600;
+const WIDTH = 650;
 const HEIGHT = 100;
 const figureHeight = 100;
 const figureWidth = 100;
@@ -41,6 +41,8 @@ var generateRect = function (container, index) {
     g.append('rect')
         .attr('x', INITIAL)
         .attr('y', INITIAL)
+        .attr('rx', 20)
+        .attr('ry', 20)
         .attr('width', figureWidth)
         .attr('height', figureHeight);
 };
@@ -61,6 +63,7 @@ var generateChart = function () {
 
     var container = d3.select('.chart')
         .append('svg')
+        .attr('class','figures')
         .attr('width', WIDTH)
         .attr('height', HEIGHT);
 
