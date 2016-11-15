@@ -25,5 +25,3 @@ var generateChart = function () {
 window.onload = function() {
     generateChart();
 };
-
-
