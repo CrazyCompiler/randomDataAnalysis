@@ -6,6 +6,7 @@ const MARGIN = 30;
 const INNER_WIDTH = WIDTH - (2 * MARGIN);
 const INNER_HEIGHT = HEIGHT - (2 * MARGIN);
 
+var initialData = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 var data = [0.5, 0.9, 0.7, 0.5, 0.3, 0.35, 0.4, 0.2, 0.3, 0.2];
 
 var translate = function (x, y) {
@@ -37,7 +38,11 @@ var generateLine = function (xScale, yScale, container, data) {
         .attr('transform', translate(MARGIN, MARGIN))
         .attr('class', 'random_path')
         .append('path')
-        .attr("d", line(data));
+        .attr("d", line(initialData));
+
+        g.transition()
+        .duration(800)
+            .attr("d", line(data))
 };
 
 var generateCircles = function (xScale, yScale, container, data ) {
@@ -45,13 +50,18 @@ var generateCircles = function (xScale, yScale, container, data ) {
             .attr('class','circle')
             .attr('transform', translate(MARGIN, MARGIN));
 
-        g.selectAll('circle').data(data)
+        g.selectAll('circle').data(initialData)
         .enter().append('circle')
         .attr('r', 4);
 
     var circles = g.selectAll('circle');
 
     circles.attr('cx', function(q,i){return xScale(i)})
+        .attr('cy', function(q){return yScale(q)});
+
+    circles.data(data).transition()
+        .duration(800)
+        .attr('cx', function(q,i){return xScale(i)})
         .attr('cy', function(q){return yScale(q)});
 }
 
@@ -64,6 +74,7 @@ var getXValues = function () {
     elements.forEach(function (value) {
         values.push(value.innerHTML);
     });
+    values.pop();
     return values;
 };
 
