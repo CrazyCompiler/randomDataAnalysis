@@ -1,0 +1,20 @@
+.element {
+    stroke-width :2;
+    fill: none;
+}
+
+.line{
+    stroke: brown;
+}
+
+.circle{
+    stroke: red;
+}
+
+.rect {
+    stroke: blue;
+}
+
+.triangle{
+    stroke: green;
+}

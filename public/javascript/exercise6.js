@@ -4,39 +4,70 @@ const figureHeight = 100;
 const figureWidth = 100;
 const INITIAL = 0;
 
-var generateChart = function () {
-    var svg = d3.select('.chart')
-                .append('svg')
-                .attr('width', WIDTH)
-                .attr('height', HEIGHT);
+var translate = function (index) {
+    return "translate(" + index * 150 + "," + 0 + ")";
+}
 
-    svg.append('line')
+var getGroupElement = function (container, index, type) {
+    var g = container.append('g')
+        .attr('class', 'element ' + type)
+        .attr('transform', translate(index));
+
+    return g;
+}
+
+var generateLine = function (container, index) {
+    var g = getGroupElement(container, index, 'line');
+
+    g.append('line')
         .attr('x1', figureWidth)
         .attr('y1', INITIAL)
         .attr('x2', INITIAL)
         .attr('y2', figureHeight)
-        .attr('stroke','brown')
-        .attr('stroke-width',2);
+};
 
-    svg.append('circle')
-        .attr('cx',figureWidth*2)
-        .attr('cy',HEIGHT/2)
-        .attr('r',HEIGHT/2)
-        .attr('fill','none')
-        .attr('stroke','red')
-        .attr('stroke-width',2);
+var generateCircle = function (container, index) {
+    var g = getGroupElement(container, index, 'circle');
 
-    svg.append('rect')
-        .attr("x", figureWidth*3)
-        .attr("y", INITIAL)
-        .attr("width", figureWidth)
-        .attr("height", figureHeight)
-        .attr('fill','none')
-        .attr('stroke','blue')
-        .attr('stroke-width',2);
+    g.append('circle')
+        .attr('cx', figureWidth / 2)
+        .attr('cy', figureHeight / 2)
+        .attr('r', figureHeight / 2);
+};
 
+var generateRect = function (container, index) {
+    var g = getGroupElement(container, index, 'rect');
 
+    g.append('rect')
+        .attr('x', INITIAL)
+        .attr('y', INITIAL)
+        .attr('width', figureWidth)
+        .attr('height', figureHeight);
+};
+
+var generateTriangle = function (container, index) {
+    var g = getGroupElement(container, index, 'triangle');
+
+    var firstPoint = INITIAL + ',' + figureHeight;
+    var secondPoint = figureWidth/2 + ',' + INITIAL;
+    var thirdPoint = figureWidth + ',' + figureHeight;
+
+    g.append('polygon')
+        .attr('points',firstPoint+', '+secondPoint+', '+thirdPoint);
+}
+
+var generateChart = function () {
+    var figuresGenerators = [generateLine, generateCircle, generateRect, generateTriangle]
+
+    var container = d3.select('.chart')
+        .append('svg')
+        .attr('width', WIDTH)
+        .attr('height', HEIGHT);
+
+    figuresGenerators.forEach(function (generate, index) {
+        generate(container, index);
+    })
 
 };
 
-window.onload = generateChart();
+generateChart();
