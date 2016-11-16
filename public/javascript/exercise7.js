@@ -6,8 +6,10 @@ const MARGIN = 30;
 const INNER_WIDTH = WIDTH - (2 * MARGIN);
 const INNER_HEIGHT = HEIGHT - (2 * MARGIN);
 
-var initialData = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-var data = [0.5, 0.9, 0.7, 0.5, 0.3, 0.35, 0.4, 0.2, 0.3, 0.2];
+var initialData = [{x:0,y:1},{x:2,y:1},{x:3,y:1},{x:4,y:1},{x:5,y:1},{x:6, y:1},{x:7 ,y:1},{x:8 ,y:1},{x:9, y:1}];
+var data = [{x:0,y:0.5},{x:1,y:0.9},{x:2,y:0.7},{x:3,y:0.5},{x:4,y:0.3},{x:6, y:0.4},{x:7 ,y:0.2},{x:8 ,y:0.3},{x:9, y:0.2}];
+
+var _xScale, _yScale;
 
 var translate = function (x, y) {
     return "translate(" + x + "," + y + ")";
@@ -29,23 +31,19 @@ var generateAxis = function (xScale, yScale, container) {
         .call(yAxis);
 };
 
-var generateLine = function (xScale, yScale, container, data) {
-    var line = d3.line()
-        .x(function (q, i) { return xScale(i)} )
-        .y(function (q) { return yScale(q) });
-
+var generateLine = function (container, data, initialLine, line) {
     var g = container.append('g')
         .attr('transform', translate(MARGIN, MARGIN))
         .attr('class', 'random_path')
         .append('path')
-        .attr("d", line(initialData));
+        .attr("d", initialLine(initialData));
 
         g.transition()
         .duration(800)
-            .attr("d", line(data))
+        .attr("d", line(data))
 };
 
-var generateCircles = function (xScale, yScale, container, data ) {
+var generateCircles = function (container, cxOperation, initialCYOperation,cyOperation) {
     var g = container.append('g')
             .attr('class','circle')
             .attr('transform', translate(MARGIN, MARGIN));
@@ -56,26 +54,30 @@ var generateCircles = function (xScale, yScale, container, data ) {
 
     var circles = g.selectAll('circle');
 
-    circles.attr('cx', function(q,i){return xScale(i)})
-        .attr('cy', function(q){return yScale(q)});
+    circles.attr('cx', cxOperation)
+        .attr('cy', initialCYOperation);
 
     circles.data(data).transition()
         .duration(800)
-        .attr('cx', function(q,i){return xScale(i)})
-        .attr('cy', function(q){return yScale(q)});
-}
+        .delay(800)
+        .attr('cx',cxOperation)
+        .attr('cy',cyOperation);
+};
 
-var getXValues = function () {
-    var xNodes = d3.selectAll('.xAxis text')._groups[0];
-    var values = [];
+var getSinValue = function (value) {
+    return (Math.sin(value)/10)+0.5;
+};
 
-    var elements = Array.apply(null, xNodes);
+var cxOperation = function (q) {
+    return _xScale(q.x);
+};
 
-    elements.forEach(function (value) {
-        values.push(value.innerHTML);
-    });
-    values.pop();
-    return values;
+var cyOperation = function (q) {
+    return _yScale(q.y);
+};
+
+var cySinOperation = function (q) {
+    return _yScale(getSinValue(q.x));
 };
 
 var generateChart = function () {
@@ -83,26 +85,30 @@ var generateChart = function () {
         .attr('width', WIDTH)
         .attr('height', HEIGHT);
 
-    var xScale = d3.scaleLinear()
+    _xScale = d3.scaleLinear()
         .domain([0, data.length])
         .range([0, INNER_WIDTH]);
 
-    var yScale = d3.scaleLinear()
+    _yScale = d3.scaleLinear()
         .domain([0, 1.0])
         .range([INNER_HEIGHT, 0]);
 
-    generateAxis(xScale, yScale, svg);
-    generateLine(xScale, yScale, svg, data);
+    var simpleLine = d3.line()
+        .x(function (q) { return _xScale(q.x)} )
+        .y(function (q) { return _yScale(q.y) });
 
-    var xValues = getXValues();
+    var sinLine = d3.line()
+        .x(function (q) { return _xScale(q.x)} )
+        .y(function (q) { return _yScale(getSinValue(q.x)) });
 
-    var sinValues = xValues.map(function (value) {
-        return (Math.sin(value)/10)+0.5;
-    })
+    generateAxis(_xScale, _yScale, svg);
+    generateLine(svg, data, simpleLine,simpleLine);
+    generateCircles(svg, cxOperation, cyOperation, cyOperation);
 
-    generateLine(xScale, yScale, svg, sinValues);
-    generateCircles(xScale, yScale, svg, data);
-    generateCircles(xScale, yScale, svg, sinValues);
+    setTimeout(function(){
+        generateLine(svg, data, simpleLine,sinLine);
+        generateCircles(svg, cxOperation, cyOperation, cySinOperation);
+    }, 500);
 
 
 };
