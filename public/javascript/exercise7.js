@@ -1,5 +1,5 @@
 const HEIGHT = 600;
-const WIDTH = 600;
+const WIDTH = 700;
 
 const MARGIN = 30;
 
@@ -29,10 +29,12 @@ var generateAxis = function (xScale, yScale, container) {
         .call(yAxis);
 };
 
-var generateLine = function (xScale, yScale, container, data) {
+var generateLine = function (xScale, yScale, container, data, curveAs) {
     var line = d3.line()
         .x(function (q, i) { return xScale(i)} )
-        .y(function (q) { return yScale(q) });
+        .y(function (q) { return yScale(q) })
+        .curve(curveAs);
+
 
     var g = container.append('g')
         .attr('transform', translate(MARGIN, MARGIN))
@@ -61,6 +63,7 @@ var generateCircles = function (xScale, yScale, container, data ) {
 
     circles.data(data).transition()
         .duration(800)
+        .delay(500)
         .attr('cx', function(q,i){return xScale(i)})
         .attr('cy', function(q){return yScale(q)});
 }
@@ -78,10 +81,16 @@ var getXValues = function () {
     return values;
 };
 
-var generateChart = function () {
+var generateChart = function (curveAs, name) {
     var svg = d3.select('.chart').append('svg')
         .attr('width', WIDTH)
         .attr('height', HEIGHT);
+
+    svg.append('g')
+        .attr('x', WIDTH/2)
+        .attr('y', 10)
+        .attr('class','curveName')
+        .text(name);
 
     var xScale = d3.scaleLinear()
         .domain([0, data.length])
@@ -92,7 +101,7 @@ var generateChart = function () {
         .range([INNER_HEIGHT, 0]);
 
     generateAxis(xScale, yScale, svg);
-    generateLine(xScale, yScale, svg, data);
+    generateLine(xScale, yScale, svg, data, curveAs);
 
     var xValues = getXValues();
 
@@ -100,11 +109,19 @@ var generateChart = function () {
         return (Math.sin(value)/10)+0.5;
     })
 
-    generateLine(xScale, yScale, svg, sinValues);
+    generateLine(xScale, yScale, svg, sinValues, curveAs);
     generateCircles(xScale, yScale, svg, data);
     generateCircles(xScale, yScale, svg, sinValues);
 
 
 };
 
-generateChart();
+generateChart(d3.curveLinear, 'Curve Linear');
+generateChart(d3.curveLinearClosed, 'Curve Linear Closed');
+generateChart(d3.curveBasis, 'Curve Basis');
+generateChart(d3.curveStepAfter, 'Curve Step After');
+generateChart(d3.curveLinearClosed, 'Curve Linear Closed');
+generateChart(d3.curveCatmullRom, 'Curve CatmullRom');
+
+
+
