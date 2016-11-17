@@ -1,0 +1,16 @@
+.heading{
+    stroke: steelblue;
+    font: normal 20px Arial;
+}
+
+.random_path path {
+    fill:none;
+    stroke: steelblue;
+    stroke-width:2;
+}
+
+.circle circle{
+    fill: white;
+    stroke: steelblue;
+    stroke-width:1px;
+}
