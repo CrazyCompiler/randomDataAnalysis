@@ -6,62 +6,50 @@ const MARGIN = 30;
 const INNER_WIDTH = WIDTH - (2 * MARGIN);
 const INNER_HEIGHT = HEIGHT - (2 * MARGIN);
 
-var initialData = [{x:0,y:1},{x:2,y:1},{x:3,y:1},{x:4,y:1},{x:5,y:1},{x:6, y:1},{x:7 ,y:1},{x:8 ,y:1},{x:9, y:1}];
 var data = [{x:0,y:0.5},{x:1,y:0.9},{x:2,y:0.7},{x:3,y:0.5},{x:4,y:0.3},{x:6, y:0.4},{x:7 ,y:0.2},{x:8 ,y:0.3},{x:9, y:0.2}];
 
-var _xScale, _yScale;
+var _xScale, _yScale, _svg;
 
 var translate = function (x, y) {
     return "translate(" + x + "," + y + ")";
 };
 
-var generateAxis = function (xScale, yScale, container) {
+var generateAxis = function (xScale, yScale) {
+    var x = d3.axisBottom(xScale).ticks(10);
+    var y = d3.axisLeft(yScale).ticks(10);
 
-    var xAxis = d3.axisBottom(xScale).ticks(10);
-    var yAxis = d3.axisLeft(yScale).ticks(10);
-
-    container.append('g')
+    _svg.append('g')
         .attr('transform', translate(MARGIN, HEIGHT - MARGIN))
-        .call(xAxis)
+        .call(x)
         .classed('xAxis', true);
 
-    container.append('g')
+    _svg.append('g')
         .attr('transform', translate(MARGIN, MARGIN))
         .classed('yAxis', true)
-        .call(yAxis);
+        .call(y);
 };
 
-var generateLine = function (container, data, initialLine, line) {
-    var g = container.append('g')
+var generateLine = function (data, line) {
+    var g = _svg.append('g')
         .attr('transform', translate(MARGIN, MARGIN))
         .attr('class', 'random_path')
         .append('path')
-        .attr("d", initialLine(initialData));
-
-        g.transition()
-        .duration(800)
         .attr("d", line(data))
 };
 
-var generateCircles = function (container, cxOperation, initialCYOperation,cyOperation) {
-    var g = container.append('g')
+var generateCircles = function (data, cxOperation, cyOperation) {
+    var g = _svg.append('g')
             .attr('class','circle')
             .attr('transform', translate(MARGIN, MARGIN));
 
-        g.selectAll('circle').data(initialData)
+        g.selectAll('circle').data(data)
         .enter().append('circle')
         .attr('r', 4);
 
     var circles = g.selectAll('circle');
 
     circles.attr('cx', cxOperation)
-        .attr('cy', initialCYOperation);
-
-    circles.data(data).transition()
-        .duration(800)
-        .delay(800)
-        .attr('cx',cxOperation)
-        .attr('cy',cyOperation);
+        .attr('cy', cyOperation);
 };
 
 var getSinValue = function (value) {
@@ -80,10 +68,26 @@ var cySinOperation = function (q) {
     return _yScale(getSinValue(q.x));
 };
 
-var generateChart = function () {
-    var svg = d3.select('.chart').append('svg')
+var getSinValues = function () {
+    var nodeList = _svg.selectAll('.xAxis .tick>text')._groups[0];
+    var elements = Array.apply(null, nodeList); 
+    var sinValues = [];
+    elements.forEach(function (element, index) {
+        sinValues.push({'x':index,'y':Number(element.innerHTML)});
+    });
+    return sinValues;
+}
+
+var generateChart = function (curve, name) {
+    _svg = d3.select('.chart').append('svg')
         .attr('width', WIDTH)
         .attr('height', HEIGHT);
+
+    _svg.append("text")
+        .attr('class','heading')
+        .attr('x',WIDTH/2)
+        .attr('y',20)
+        .text(name);
 
     _xScale = d3.scaleLinear()
         .domain([0, data.length])
@@ -95,22 +99,30 @@ var generateChart = function () {
 
     var simpleLine = d3.line()
         .x(function (q) { return _xScale(q.x)} )
-        .y(function (q) { return _yScale(q.y) });
+        .y(function (q) { return _yScale(q.y) })
+        .curve(curve);
 
     var sinLine = d3.line()
         .x(function (q) { return _xScale(q.x)} )
-        .y(function (q) { return _yScale(getSinValue(q.x)) });
+        .y(function (q) { return _yScale(getSinValue(q.x)) })
+        .curve(curve);
 
-    generateAxis(_xScale, _yScale, svg);
-    generateLine(svg, data, simpleLine,simpleLine);
-    generateCircles(svg, cxOperation, cyOperation, cyOperation);
+    generateAxis(_xScale, _yScale);
+    generateLine(data, simpleLine);
+    generateCircles(data, cxOperation, cyOperation);
 
-    setTimeout(function(){
-        generateLine(svg, data, simpleLine,sinLine);
-        generateCircles(svg, cxOperation, cyOperation, cySinOperation);
-    }, 500);
+    var sinData = getSinValues();
 
+    generateLine(sinData,sinLine);
+    generateCircles(sinData, cxOperation, cySinOperation);
 
 };
 
-generateChart();
+generateChart(d3.curveLinear, 'curveLinear');
+generateChart(d3.curveLinearClosed, 'curveLinearClosed');
+generateChart(d3.curveStepAfter, 'curveStepAfter');
+generateChart(d3.curveBasis, 'curveBasis');
+generateChart(d3.curveBundle, 'curveBundle');
+generateChart(d3.curveCardinal, 'curveCardinal');
+generateChart(d3.curveCardinalClosed, 'curveCardinalClosed');
+generateChart(d3.curveCatmullRom, 'curveCatmullRom');

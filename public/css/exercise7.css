@@ -1,3 +1,8 @@
+.heading{
+    stroke: steelblue;
+    font: normal 20px Arial;
+}
+
 .random_path path {
     fill:none;
     stroke: steelblue;
