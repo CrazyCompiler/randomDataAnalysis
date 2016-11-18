@@ -37,10 +37,11 @@ var cyOperation = function (q) {
     return _yScale((Math.sin(3*q)+1)/2) 
 };
 
-var generateLine = function (curveTension) {
+var generateLine = function (tension) {
     var line = d3.line()
         .x(cxOperation)
-        .y(cyOperation);
+        .y(cyOperation)
+        .curve(d3.curveCardinal.tension(tension));
 
     var g = _svg.append('g')
         .attr('transform', translate(MARGIN, MARGIN))
@@ -79,4 +80,11 @@ var generateChart = function (curveTension) {
     generateCircles();
 };
 
-generateChart();
+var tensionScale = d3.scaleLinear()
+    .domain([0,4])
+    .range([-2, 1]);
+
+for(var i = 0; i < 5; i++){
+    generateChart(tensionScale(i));
+}
+
