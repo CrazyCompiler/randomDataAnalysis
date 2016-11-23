@@ -1,127 +1,128 @@
 const HEIGHT = 600;
-const WIDTH = 700;
+const WIDTH = 600;
 
 const MARGIN = 30;
 
 const INNER_WIDTH = WIDTH - (2 * MARGIN);
 const INNER_HEIGHT = HEIGHT - (2 * MARGIN);
 
-var initialData = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-var data = [0.5, 0.9, 0.7, 0.5, 0.3, 0.35, 0.4, 0.2, 0.3, 0.2];
+var data = [{x:0,y:0.5},{x:1,y:0.9},{x:2,y:0.7},{x:3,y:0.5},{x:4,y:0.3},{x:6, y:0.4},{x:7 ,y:0.2},{x:8 ,y:0.3},{x:9, y:0.2}];
+
+var _xScale, _yScale, _svg;
 
 var translate = function (x, y) {
     return "translate(" + x + "," + y + ")";
 };
 
-var generateAxis = function (xScale, yScale, container) {
+var generateAxis = function (xScale, yScale) {
+    var x = d3.axisBottom(xScale).ticks(10);
+    var y = d3.axisLeft(yScale).ticks(10);
 
-    var xAxis = d3.axisBottom(xScale).ticks(10);
-    var yAxis = d3.axisLeft(yScale).ticks(10);
-
-    container.append('g')
+    _svg.append('g')
         .attr('transform', translate(MARGIN, HEIGHT - MARGIN))
-        .call(xAxis)
+        .call(x)
         .classed('xAxis', true);
 
-    container.append('g')
+    _svg.append('g')
         .attr('transform', translate(MARGIN, MARGIN))
         .classed('yAxis', true)
-        .call(yAxis);
+        .call(y);
 };
 
-var generateLine = function (xScale, yScale, container, data, curveAs) {
-    var line = d3.line()
-        .x(function (q, i) { return xScale(i)} )
-        .y(function (q) { return yScale(q) })
-        .curve(curveAs);
-
-
-    var g = container.append('g')
+var generateLine = function (data, line) {
+    var g = _svg.append('g')
         .attr('transform', translate(MARGIN, MARGIN))
         .attr('class', 'random_path')
         .append('path')
-        .attr("d", line(initialData));
-
-        g.transition()
-        .duration(800)
-            .attr("d", line(data))
+        .attr("d", line(data))
 };
 
-var generateCircles = function (xScale, yScale, container, data ) {
-    var g = container.append('g')
+var generateCircles = function (data, cxOperation, cyOperation) {
+    var g = _svg.append('g')
             .attr('class','circle')
             .attr('transform', translate(MARGIN, MARGIN));
 
-        g.selectAll('circle').data(initialData)
+        g.selectAll('circle').data(data)
         .enter().append('circle')
         .attr('r', 4);
 
     var circles = g.selectAll('circle');
 
-    circles.attr('cx', function(q,i){return xScale(i)})
-        .attr('cy', function(q){return yScale(q)});
-
-    circles.data(data).transition()
-        .duration(800)
-        .delay(500)
-        .attr('cx', function(q,i){return xScale(i)})
-        .attr('cy', function(q){return yScale(q)});
-}
-
-var getXValues = function () {
-    var xNodes = d3.selectAll('.xAxis text')._groups[0];
-    var values = [];
-
-    var elements = Array.apply(null, xNodes);
-
-    elements.forEach(function (value) {
-        values.push(value.innerHTML);
-    });
-    values.pop();
-    return values;
+    circles.attr('cx', cxOperation)
+        .attr('cy', cyOperation);
 };
 
-var generateChart = function (curveAs, name) {
-    var svg = d3.select('.chart').append('svg')
+var getSinValue = function (value) {
+    return (Math.sin(value)/10)+0.5;
+};
+
+var cxOperation = function (q) {
+    return _xScale(q.x);
+};
+
+var cyOperation = function (q) {
+    return _yScale(q.y);
+};
+
+var cySinOperation = function (q) {
+    return _yScale(getSinValue(q.x));
+};
+
+var getSinValues = function () {
+    var nodeList = _svg.selectAll('.xAxis .tick>text')._groups[0];
+    var elements = Array.apply(null, nodeList); 
+    var sinValues = [];
+    elements.forEach(function (element, index) {
+        sinValues.push({'x':index,'y':Number(element.innerHTML)});
+    });
+    return sinValues;
+}
+
+var generateChart = function (curve, name) {
+    _svg = d3.select('.chart').append('svg')
         .attr('width', WIDTH)
         .attr('height', HEIGHT);
 
-    svg.append('g')
-        .attr('x', WIDTH/2)
-        .attr('y', 10)
-        .attr('class','curveName')
+    _svg.append("text")
+        .attr('class','heading')
+        .attr('x',WIDTH/2)
+        .attr('y',20)
         .text(name);
 
-    var xScale = d3.scaleLinear()
+    _xScale = d3.scaleLinear()
         .domain([0, data.length])
         .range([0, INNER_WIDTH]);
 
-    var yScale = d3.scaleLinear()
+    _yScale = d3.scaleLinear()
         .domain([0, 1.0])
         .range([INNER_HEIGHT, 0]);
 
-    generateAxis(xScale, yScale, svg);
-    generateLine(xScale, yScale, svg, data, curveAs);
+    var simpleLine = d3.line()
+        .x(function (q) { return _xScale(q.x)} )
+        .y(function (q) { return _yScale(q.y) })
+        .curve(curve);
 
-    var xValues = getXValues();
+    var sinLine = d3.line()
+        .x(function (q) { return _xScale(q.x)} )
+        .y(function (q) { return _yScale(getSinValue(q.x)) })
+        .curve(curve);
 
-    var sinValues = xValues.map(function (value) {
-        return (Math.sin(value)/10)+0.5;
-    })
+    generateAxis(_xScale, _yScale);
+    generateLine(data, simpleLine);
+    generateCircles(data, cxOperation, cyOperation);
 
-    generateLine(xScale, yScale, svg, sinValues, curveAs);
-    generateCircles(xScale, yScale, svg, data);
-    generateCircles(xScale, yScale, svg, sinValues);
+    var sinData = getSinValues();
 
+    generateLine(sinData,sinLine);
+    generateCircles(sinData, cxOperation, cySinOperation);
 
 };
 
-generateChart(d3.curveLinear, 'Curve Linear');
-generateChart(d3.curveLinearClosed, 'Curve Linear Closed');
-generateChart(d3.curveBasis, 'Curve Basis');
-generateChart(d3.curveStepAfter, 'Curve Step After');
-generateChart(d3.curveLinearClosed, 'Curve Linear Closed');
-generateChart(d3.curveCatmullRom, 'Curve CatmullRom');
-
-
-
+generateChart(d3.curveLinear, 'curveLinear');
+generateChart(d3.curveLinearClosed, 'curveLinearClosed');
+generateChart(d3.curveStepAfter, 'curveStepAfter');
+generateChart(d3.curveBasis, 'curveBasis');
+generateChart(d3.curveBundle, 'curveBundle');
+generateChart(d3.curveCardinal, 'curveCardinal');
+generateChart(d3.curveCardinalClosed, 'curveCardinalClosed');
+generateChart(d3.curveCatmullRom, 'curveCatmullRom');

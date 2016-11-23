@@ -8,7 +8,7 @@ const INNER_HEIGHT = HEIGHT - (2 * MARGIN);
 
 var _xScale, _yScale, _svg;
 
-var data = [0,1,2,3,4,5,6,7,8,9];
+var data = [0,1,2,3,4,5,6,7,8,9,10];
 
 var translate = function (x, y) {
     return "translate(" + x + "," + y + ")";
@@ -34,20 +34,32 @@ var cxOperation = function (q,i) {
 }; 
 
 var cyOperation = function (q) { 
-    return _yScale((Math.sin(3*q)+1)/2) 
+    return _yScale(((3 * (Math.sin(q))) + 5) / 10) ;
 };
 
-var generateLine = function (tension) {
-    var line = d3.line()
+var generateArea = function (curve) {
+    var area = d3.area()
+                 .x(cxOperation)
+                 .y0(INNER_HEIGHT)
+                 .y1(cyOperation)
+                 .curve(curve);
+
+     var line = d3.line()
         .x(cxOperation)
         .y(cyOperation)
-        .curve(d3.curveCardinal.tension(tension));
+        .curve(curve);
 
-    var g = _svg.append('g')
+    _svg.append('g')
         .attr('transform', translate(MARGIN, MARGIN))
-        .attr('class', 'random_path')
+        .attr('class', 'random_area')
         .append('path')
-        .attr("d", line(data))
+        .attr("d", area(data));
+
+    _svg.append('g')
+    .attr('transform', translate(MARGIN, MARGIN))
+    .attr('class', 'random_line')
+    .append('path')
+    .attr("d", line(data));
 };
 
 var generateCircles = function () {
@@ -62,29 +74,32 @@ var generateCircles = function () {
     .attr('cy', cyOperation);
 };
 
-var generateChart = function (curveTension) {
+var generateChart = function (curve, name) {
     _svg = d3.select('.chart').append('svg')
         .attr('width', WIDTH)
         .attr('height', HEIGHT);
 
+    _svg.append('text')
+        .attr('class','heading')
+        .attr('x',WIDTH/2)
+        .attr('y',20)
+        .text(name);    
+
     _xScale = d3.scaleLinear()
-        .domain([0, data.length])
+        .domain([0, 10])
         .range([0, INNER_WIDTH]);
 
     _yScale = d3.scaleLinear()
-        .domain([0, 1.0])
+        .domain([0, 1])
         .range([INNER_HEIGHT, 0]);
 
     generateAxis();
-    generateLine(curveTension);
+    generateArea(curve);
     generateCircles();
 };
 
-var tensionScale = d3.scaleLinear()
-    .domain([0,4])
-    .range([-2, 1]);
-
-for(var i = 0; i < 5; i++){
-    generateChart(tensionScale(i));
-}
-
+generateChart(d3.curveLinearClosed, 'curveLinearClosed');
+generateChart(d3.curveStepAfter, 'curveStepAfter');
+generateChart(d3.curveBasisOpen, 'curveBasisOpen');
+generateChart(d3.curveCardinalClosed, 'curveCardinalClosed');
+generateChart(d3.curveBasis, 'curveBasis');

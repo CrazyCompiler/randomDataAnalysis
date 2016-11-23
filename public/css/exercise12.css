@@ -1,0 +1,16 @@
+.random_area{
+	fill-opacity: 0.2;
+	fill: steelblue;
+}
+
+.circle circle {
+    fill: white;
+    stroke: steelblue;
+    stroke-width: 1px;
+}
+
+.random_line{
+	fill: none;
+    stroke: steelblue;
+    stroke-width: 1px;	
+}

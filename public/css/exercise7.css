@@ -1,11 +1,6 @@
-.chart{
-    width: 800px;
-}
-
-.curveName{
-    width:20px;
-    height: 30px;
-
+.heading{
+    stroke: steelblue;
+    font: normal 20px Arial;
 }
 
 .random_path path {
@@ -14,7 +9,7 @@
     stroke-width:2;
 }
 
-.circle{
+.circle circle{
     fill: white;
     stroke: steelblue;
     stroke-width:1px;
